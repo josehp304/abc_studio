@@ -1,103 +1,229 @@
-import Image from "next/image";
+"use client"
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Home, User, Briefcase, FileText } from 'lucide-react'
+import { NavBar } from "@/components/ui/tubelight-navbar"
 
-export default function Home() {
+
+
+const App: React.FC = () => {
+  const [activeService, setActiveService] = useState(0);
+  const [email, setEmail] = useState("");
+  const [currentHeroImage, setCurrentHeroImage] = useState(0);
+
+  const heroImages = [
+    {
+      url: "https://media.gettyimages.com/id/1164209568/photo/new-york-new-york-benjy-benjyfishy-david-fish-martin-mrsavagem-foss-andersen-aydan-conrad.jpg?s=612x612&w=0&k=20&c=8k9jiN6GQBs4TajokMiPVV5S4TGolPC9gvMTTheqBP0=",
+      title: "Create. Stream. Dominate.",
+      description: "Transforming digital dreams into viral reality. We don't just create content - we create culture."
+    },
+    {
+      url:"/images/8878659.jpg",
+      title:"We Will carry you to the top",
+      description:"With our gaming live streaming services, you'll be in the spotlight like never before."
+
+    },
+    {
+      url: "https://img.freepik.com/free-photo/empty-streaming-room-with-professional-powerful-computer-rgb-keyboard-mouse-headphones-microphone_482257-549.jpg?t=st=1742036570~exp=1742040170~hmac=b6e1eb44fbbf65365a17597f1eb586432437412bfa5fec4c212c1ec1ccfe5ee2&w=1380",
+      title: "Professional Live Streaming",
+      description: "High-quality streaming solutions for events of any scale."
+    },
+    {url:"https://barchart-news-media-prod.aws.barchart.com/FC/2c2d856f16cfa4595af786ce5ab045bb/%3Furl%3Dhttps%253a%252f%252fg.foolcdn.com%252feditorial%252fimages%252f808409%252f022025-shopify-results-outlook.png%26amp%3Bw%3D700",
+      title:"Wanna see results like this?",
+      description:"With our digital marketing services, you'll be able to crake the algorithm."
+    },
+    {
+      url: "https://public.readdy.ai/ai/img_res/47dfda0a3d158c32e960695a00659467.jpg",
+      title: "Cinematic Production",
+      description: "Creating compelling visual stories that captivate audiences."
+    }
+  ];
+
+  const services = [
+    {
+      title: "Live Streaming",
+      icon: "fa-video",
+      description: "Professional streaming solutions for any scale",
+      image:
+        "https://public.readdy.ai/ai/img_res/39c44d9d9f7df0e46d3d37e8cb3fee39.jpg",
+    },
+    {
+      title: "Media Production",
+      icon: "fa-film",
+      description: "Cinematic content that captures attention",
+      image:
+        "https://public.readdy.ai/ai/img_res/47dfda0a3d158c32e960695a00659467.jpg",
+    },
+    {
+      title: "Digital Marketing",
+      icon: "fa-chart-line",
+      description: "Strategic campaigns that drive results",
+      image:
+        "https://public.readdy.ai/ai/img_res/65ed2d5fa804d5c28c3613c44b4ffd94.jpg",
+    },
+    {
+      title: "Event Management",
+      icon: "fa-calendar-check",
+      description: "Seamless experiences from concept to execution",
+      image:
+        "https://public.readdy.ai/ai/img_res/d6c40491ee151e152f6b0e794bd1ab5d.jpg",
+    },
+    {
+      title: "Esports Services",
+      icon: "fa-gamepad",
+      description: "Complete tournament and league solutions",
+      image:
+        "https://public.readdy.ai/ai/img_res/3b07fa1ee77bc3daeb5dfc421bec439d.jpg",
+    },
+  ];
+
+  const achievements = [
+    { number: "100K+", label: "Hours Streamed" },
+    { number: "500+", label: "Events Managed" },
+    { number: "10M+", label: "Global Viewers" },
+    { number: "200+", label: "Tournaments Hosted" },
+  ];
+ const navItems = [
+    { name: 'Home', url: '#', icon: Home },
+    { name: 'About', url: '#', icon: User },
+    { name: 'Projects', url: '#', icon: Briefcase },
+    { name: 'Resume', url: '#', icon: FileText }
+  ]
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentHeroImage((prev) => (prev + 1) % heroImages.length);
+    }, 5000); // Change image every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleSubscribe = () => {
+    if (email) {
+      setEmail("");
+      // Add subscription logic here
+    }
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="w-full min-h-screen bg-white text-gray-900">
+      {/* Header */}
+      <header className="md:hidden bg-primary-foreground text-primary-background font-bold tracking-widest text-3xl md:text-4xl lg:text-5xl p-4 md:p-8 lg:p-12">
+        <div className="container mx-auto flex justify-center">ABC STUDIOS</div>
+      </header>
+      
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      <NavBar items={navItems} />
+
+      {/* Hero Section */}
+      <div className="pt-16 px-4 md:px-8 lg:px-16">
+        <div className="h-[400px] md:h-[600px] relative rounded-xl overflow-hidden mb-8">
+          <div className="relative w-full h-full">
+            {/* Navigation Arrows */}
+            <button
+              onClick={() => setCurrentHeroImage((prev) => (prev - 1 + heroImages.length) % heroImages.length)}
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-black/30 hover:bg-black/50 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all"
+              aria-label="Previous slide"
+            >
+              <i className="fas fa-chevron-left"></i>
+            </button>
+            <button
+              onClick={() => setCurrentHeroImage((prev) => (prev + 1) % heroImages.length)}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-black/30 hover:bg-black/50 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all"
+              aria-label="Next slide"
+            >
+              <i className="fas fa-chevron-right"></i>
+            </button>
+
+            {heroImages.map((image, index) => (
+              <div
+                key={index}
+                className={`absolute inset-0 transition-opacity duration-1000 ${
+                  index === currentHeroImage ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                <img
+                  src={image.url}
+                  className="w-full h-full object-cover"
+                  alt={`Hero banner ${index + 1}`}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent flex flex-col justify-end p-6 md:p-12">
+                  <h1 className="text-white text-3xl md:text-5xl font-bold mb-2">
+                    {image.title}
+                  </h1>
+                  <p className="text-white text-sm md:text-lg opacity-90 max-w-2xl">
+                    {image.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+            {/* Navigation Dots */}
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+              {heroImages.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentHeroImage(index)}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    index === currentHeroImage
+                      ? "bg-white w-4"
+                      : "bg-white/50 hover:bg-white/75"
+                  }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+
+      {/* Services Grid */}
+      <div id="services" className="px-4 md:px-8 lg:px-16 mb-8">
+        <h2 className="text-2xl md:text-3xl font-bold mb-4">Our Services</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+          {services.map((service, index) => (
+            <Card
+              key={index}
+              className="p-4 cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => setActiveService(index)}
+            >
+              <div className="h-24 w-full bg-gray-300 rounded-t">
+                <img
+                  src={service.image}
+                  className="h-full w-full object-cover rounded-t"
+                  alt={service.title}
+                />
+              </div>
+              <h3 className="text-center font-semibold mb-1 pt-2">
+                {service.title}
+              </h3>
+              <p className="text-xs text-center text-gray-600">
+                {service.description}
+              </p>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Achievements */}
+      <div id="achievements" className="w-full px-4 md:px-8 lg:px-16 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {achievements.map((achievement, index) => (
+            <div
+              key={index}
+              className="bg-black text-white rounded-xl p-4 text-center"
+            >
+              <div className="text-2xl md:text-3xl font-bold">{achievement.number}</div>
+              <div className="text-sm md:text-base opacity-80">{achievement.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* <NavBar items={navItems} /> */}
     </div>
   );
-}
+};
+
+export default App;

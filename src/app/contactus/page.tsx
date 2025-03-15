@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 import Link from 'next/link';
 import Image from 'next/image';
+import { FaSun, FaMoon } from 'react-icons/fa';
 
 interface FormData {
   name: string;
@@ -21,8 +22,16 @@ export default function ContactPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
 
   useEffect(() => {
+    // Check for saved theme preference or default to dark
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    }
+
     // Add Formbricks script
     const script = document.createElement('script');
     script.type = 'text/javascript';
@@ -39,6 +48,13 @@ export default function ContactPage() {
       document.head.removeChild(script);
     };
   }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -73,20 +89,33 @@ export default function ContactPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
+    <main className={`min-h-screen transition-colors duration-300 ${theme === 'dark' ? 'bg-gradient-to-b from-gray-900 to-gray-800 text-white' : 'bg-gradient-to-b from-gray-100 to-white text-gray-800'}`}>
       <Toaster position="top-center" />
+      
+      {/* Theme Toggle Button */}
+      <button 
+        onClick={toggleTheme} 
+        className={`fixed top-4 right-4 z-50 p-3 rounded-full transition-colors duration-300 ${
+          theme === 'dark' 
+            ? 'bg-gray-700 text-yellow-300 hover:bg-gray-600' 
+            : 'bg-indigo-100 text-indigo-600 hover:bg-indigo-200'
+        }`}
+        aria-label="Toggle theme"
+      >
+        {theme === 'dark' ? <FaSun size={20} /> : <FaMoon size={20} />}
+      </button>
       
       {/* Hero Section */}
       <div className="relative h-[50vh] w-full overflow-hidden">
-        <div className="absolute inset-0 bg-black/60 z-10"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent z-10"></div>
+        <div className={`absolute inset-0 ${theme === 'dark' ? 'bg-black/60' : 'bg-black/30'} z-10`}></div>
+        <div className={`absolute inset-0 bg-gradient-to-t ${theme === 'dark' ? 'from-gray-900' : 'from-gray-100'} to-transparent z-10`}></div>
         <div className="h-full w-full bg-[url('/studio-bg.jpg')] bg-cover bg-center"></div>
         <div className="absolute inset-0 flex items-center justify-center z-20">
           <div className="text-center">
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-4">
-              Contact <span className="text-indigo-400">Us</span>
+            <h1 className={`text-5xl md:text-7xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mb-4`}>
+              Contact <span className="text-indigo-600">Us</span>
             </h1>
-            <p className="text-xl text-gray-200 max-w-2xl mx-auto px-4">
+            <p className={`text-xl ${theme === 'dark' ? 'text-gray-200' : 'text-gray-700'} max-w-2xl mx-auto px-4`}>
               We'd love to hear from you! Reach out to discuss your next project.
             </p>
             <Link href="#contact-form" className="mt-8 inline-block px-8 py-3 bg-indigo-600 text-white font-medium rounded-full hover:bg-indigo-700 transition-colors duration-300 ease-in-out">
@@ -100,9 +129,9 @@ export default function ContactPage() {
         {/* Contact Info & Form Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
           {/* Contact Information */}
-          <div className="bg-gray-800 rounded-2xl p-8 shadow-xl transform hover:scale-[1.01] transition-transform duration-300">
-            <h2 className="text-3xl font-bold text-indigo-400 mb-6">Get In Touch</h2>
-            <p className="text-gray-300 mb-8">
+          <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl p-8 shadow-xl transform hover:scale-[1.01] transition-transform duration-300`}>
+            <h2 className="text-3xl font-bold text-indigo-600 mb-6">Get In Touch</h2>
+            <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} mb-8`}>
               Have a project in mind? Need a quote? Or just want to say hello? We're here to help you bring your vision to life.
             </p>
             
@@ -115,8 +144,8 @@ export default function ContactPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-white">Address</h3>
-                  <p className="text-gray-300 mt-1">
+                  <h3 className={`text-xl font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>Address</h3>
+                  <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} mt-1`}>
                     SJCET Palai, Palai, Kottayam<br />
                     Kerala, India - 686579
                   </p>
@@ -130,8 +159,8 @@ export default function ContactPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-white">Phone</h3>
-                  <p className="text-gray-300 mt-1">+91 (484) 246-1930</p>
+                  <h3 className={`text-xl font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>Phone</h3>
+                  <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} mt-1`}>+91 (484) 246-1930</p>
                 </div>
               </div>
               
@@ -142,8 +171,8 @@ export default function ContactPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-white">Email</h3>
-                  <p className="text-gray-300 mt-1">contact@abcstudios.com</p>
+                  <h3 className={`text-xl font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>Email</h3>
+                  <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} mt-1`}>contact@abcstudios.com</p>
                 </div>
               </div>
               
@@ -154,8 +183,8 @@ export default function ContactPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-white">Working Hours</h3>
-                  <p className="text-gray-300 mt-1">
+                  <h3 className={`text-xl font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>Working Hours</h3>
+                  <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} mt-1`}>
                     Monday - Friday: 9am - 6pm<br />
                     Weekend: By appointment
                   </p>
@@ -164,7 +193,7 @@ export default function ContactPage() {
             </div>
             
             <div className="mt-10">
-              <h3 className="text-xl font-semibold text-white mb-4">Connect With Us</h3>
+              <h3 className={`text-xl font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-800'} mb-4`}>Connect With Us</h3>
               <div className="flex space-x-4">
                 <a href="#" className="bg-indigo-600 p-3 rounded-full hover:bg-indigo-700 transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -191,8 +220,8 @@ export default function ContactPage() {
           </div>
           
           {/* Contact Form */}
-          <div id="contact-form" className="bg-gray-800 rounded-2xl p-8 shadow-xl transform hover:scale-[1.01] transition-transform duration-300">
-            <h2 className="text-3xl font-bold text-indigo-400 mb-6">Send Us a Message</h2>
+          <div id="contact-form" className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl p-8 shadow-xl transform hover:scale-[1.01] transition-transform duration-300`}>
+            <h2 className="text-3xl font-bold text-indigo-600 mb-6">Send Us a Message</h2>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="relative">
                 <input
@@ -202,14 +231,18 @@ export default function ContactPage() {
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 border border-gray-600 placeholder-transparent peer"
+                  className={`w-full ${theme === 'dark' ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-100 text-gray-800 border-gray-300'} px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 border placeholder-transparent peer`}
                   placeholder="Full Name"
                 />
                 <label 
                   htmlFor="name" 
-                  className="absolute left-4 -top-6 text-sm text-gray-300 transition-all 
-                  peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-3 
-                  peer-focus:-top-6 peer-focus:text-sm peer-focus:text-indigo-400"
+                  className={`absolute left-4 -top-6 text-sm ${
+                    theme === 'dark' 
+                      ? 'text-gray-300 peer-placeholder-shown:text-gray-400 peer-focus:text-indigo-400' 
+                      : 'text-gray-600 peer-placeholder-shown:text-gray-500 peer-focus:text-indigo-600'
+                  } transition-all 
+                  peer-placeholder-shown:text-base peer-placeholder-shown:top-3 
+                  peer-focus:-top-6 peer-focus:text-sm`}
                 >
                   Full Name
                 </label>
@@ -223,14 +256,18 @@ export default function ContactPage() {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 border border-gray-600 placeholder-transparent peer"
+                  className={`w-full ${theme === 'dark' ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-100 text-gray-800 border-gray-300'} px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 border placeholder-transparent peer`}
                   placeholder="Email Address"
                 />
                 <label 
                   htmlFor="email" 
-                  className="absolute left-4 -top-6 text-sm text-gray-300 transition-all 
-                  peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-3 
-                  peer-focus:-top-6 peer-focus:text-sm peer-focus:text-indigo-400"
+                  className={`absolute left-4 -top-6 text-sm ${
+                    theme === 'dark' 
+                      ? 'text-gray-300 peer-placeholder-shown:text-gray-400 peer-focus:text-indigo-400' 
+                      : 'text-gray-600 peer-placeholder-shown:text-gray-500 peer-focus:text-indigo-600'
+                  } transition-all 
+                  peer-placeholder-shown:text-base peer-placeholder-shown:top-3 
+                  peer-focus:-top-6 peer-focus:text-sm`}
                 >
                   Email Address
                 </label>
@@ -243,14 +280,18 @@ export default function ContactPage() {
                   id="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 border border-gray-600 placeholder-transparent peer"
+                  className={`w-full ${theme === 'dark' ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-100 text-gray-800 border-gray-300'} px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 border placeholder-transparent peer`}
                   placeholder="Phone Number"
                 />
                 <label 
                   htmlFor="phone" 
-                  className="absolute left-4 -top-6 text-sm text-gray-300 transition-all 
-                  peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-3 
-                  peer-focus:-top-6 peer-focus:text-sm peer-focus:text-indigo-400"
+                  className={`absolute left-4 -top-6 text-sm ${
+                    theme === 'dark' 
+                      ? 'text-gray-300 peer-placeholder-shown:text-gray-400 peer-focus:text-indigo-400' 
+                      : 'text-gray-600 peer-placeholder-shown:text-gray-500 peer-focus:text-indigo-600'
+                  } transition-all 
+                  peer-placeholder-shown:text-base peer-placeholder-shown:top-3 
+                  peer-focus:-top-6 peer-focus:text-sm`}
                 >
                   Phone Number
                 </label>
@@ -264,14 +305,18 @@ export default function ContactPage() {
                   required
                   value={formData.message}
                   onChange={handleChange}
-                  className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 border border-gray-600 placeholder-transparent peer"
+                  className={`w-full ${theme === 'dark' ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-100 text-gray-800 border-gray-300'} px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 border placeholder-transparent peer`}
                   placeholder="Your Message"
                 ></textarea>
                 <label 
                   htmlFor="message" 
-                  className="absolute left-4 -top-6 text-sm text-gray-300 transition-all 
-                  peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-3 
-                  peer-focus:-top-6 peer-focus:text-sm peer-focus:text-indigo-400"
+                  className={`absolute left-4 -top-6 text-sm ${
+                    theme === 'dark' 
+                      ? 'text-gray-300 peer-placeholder-shown:text-gray-400 peer-focus:text-indigo-400' 
+                      : 'text-gray-600 peer-placeholder-shown:text-gray-500 peer-focus:text-indigo-600'
+                  } transition-all 
+                  peer-placeholder-shown:text-base peer-placeholder-shown:top-3 
+                  peer-focus:-top-6 peer-focus:text-sm`}
                 >
                   Your Message
                 </label>
@@ -293,8 +338,8 @@ export default function ContactPage() {
         </div>
         
         {/* Map Section */}
-        <div className="bg-gray-800 rounded-2xl overflow-hidden shadow-xl">
-          <h2 className="text-3xl font-bold text-indigo-400 p-8">Find Us</h2>
+        <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl overflow-hidden shadow-xl`}>
+          <h2 className="text-3xl font-bold text-indigo-600 p-8">Find Us</h2>
           <div className="h-[500px] w-full relative">
             <iframe 
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3933.8997028288364!2d76.72164507489573!3d9.607066290489695!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b07ce23bc170053%3A0x8757971e61eb21dd!2sSt.%20Joseph&#39;s%20College%20of%20Engineering%20and%20Technology%2C%20Palai!5e0!3m2!1sen!2sin!4v1710501553000!5m2!1sen!2sin" 

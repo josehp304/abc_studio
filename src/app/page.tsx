@@ -4,10 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Home, User, Briefcase, FileText } from 'lucide-react'
+import { Home, User, Briefcase, FileText, Contact, UserRoundPen } from 'lucide-react'
 import { NavBar } from "@/components/ui/tubelight-navbar"
-
-
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 const App: React.FC = () => {
   const [activeService, setActiveService] = useState(0);
@@ -36,7 +35,7 @@ const App: React.FC = () => {
       description:"With our digital marketing services, you'll be able to crake the algorithm."
     },
     {
-      url: "https://public.readdy.ai/ai/img_res/47dfda0a3d158c32e960695a00659467.jpg",
+      url: "https://images.unsplash.com/photo-1675011718475-f257cb602a28?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8NGslMjBjYW1lcmF8ZW58MHx8MHx8fDA%3D",
       title: "Cinematic Production",
       description: "Creating compelling visual stories that captivate audiences."
     }
@@ -87,10 +86,11 @@ const App: React.FC = () => {
     { number: "200+", label: "Tournaments Hosted" },
   ];
  const navItems = [
-    { name: 'Home', url: '#', icon: Home },
-    { name: 'About', url: '#', icon: User },
-    { name: 'Projects', url: '#', icon: Briefcase },
-    { name: 'Resume', url: '#', icon: FileText }
+    { name: 'Home', url: '/home', icon: Home },
+    { name: 'About', url: '/aboutus', icon: User },
+    { name: 'Projects', url: '/projects', icon: Briefcase },
+    // { name: 'Resume', url: '/resume', icon: FileText }
+    { name: 'Contact', url:'/contactus', icon: UserRoundPen}
   ]
   useEffect(() => {
     const interval = setInterval(() => {
@@ -108,12 +108,14 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-white text-gray-900">
+    <div className="w-full min-h-screen bg-background dark:bg-background text-foreground dark:text-foreground md:pd-[200px]">
+      {/* Theme Toggle */}
+      <ThemeToggle />
+      
       {/* Header */}
-      <header className="md:hidden bg-primary-foreground text-primary-background font-bold tracking-widest text-3xl md:text-4xl lg:text-5xl p-4 md:p-8 lg:p-12">
+      <header className="fixed z-90 w-full md:hidden bg-background dark:bg-nav-bg text-foreground dark:text-nav-text font-bold tracking-widest text-3xl md:text-4xl lg:text-5xl p-4 md:p-8 lg:p-12">
         <div className="container mx-auto flex justify-center">ABC STUDIOS</div>
       </header>
-      
 
       <NavBar items={navItems} />
 
@@ -124,14 +126,14 @@ const App: React.FC = () => {
             {/* Navigation Arrows */}
             <button
               onClick={() => setCurrentHeroImage((prev) => (prev - 1 + heroImages.length) % heroImages.length)}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-black/30 hover:bg-black/50 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all"
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-background/30 hover:bg-background/50 dark:bg-nav-bg/30 dark:hover:bg-nav-bg/50 text-foreground dark:text-nav-text w-10 h-10 rounded-full flex items-center justify-center transition-all"
               aria-label="Previous slide"
             >
               <i className="fas fa-chevron-left"></i>
             </button>
             <button
               onClick={() => setCurrentHeroImage((prev) => (prev + 1) % heroImages.length)}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-black/30 hover:bg-black/50 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-background/30 hover:bg-background/50 dark:bg-nav-bg/30 dark:hover:bg-nav-bg/50 text-foreground dark:text-nav-text w-10 h-10 rounded-full flex items-center justify-center transition-all"
               aria-label="Next slide"
             >
               <i className="fas fa-chevron-right"></i>
@@ -150,10 +152,10 @@ const App: React.FC = () => {
                   alt={`Hero banner ${index + 1}`}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent flex flex-col justify-end p-6 md:p-12">
-                  <h1 className="text-white text-3xl md:text-5xl font-bold mb-2">
+                  <h1 className="text-nav-text text-3xl md:text-5xl font-bold mb-2">
                     {image.title}
                   </h1>
-                  <p className="text-white text-sm md:text-lg opacity-90 max-w-2xl">
+                  <p className="text-nav-text text-sm md:text-lg opacity-90 max-w-2xl">
                     {image.description}
                   </p>
                 </div>
@@ -167,8 +169,8 @@ const App: React.FC = () => {
                   onClick={() => setCurrentHeroImage(index)}
                   className={`w-2 h-2 rounded-full transition-all ${
                     index === currentHeroImage
-                      ? "bg-white w-4"
-                      : "bg-white/50 hover:bg-white/75"
+                      ? "bg-nav-text w-4"
+                      : "bg-nav-text/50 hover:bg-nav-text/75"
                   }`}
                   aria-label={`Go to slide ${index + 1}`}
                 />
@@ -185,10 +187,10 @@ const App: React.FC = () => {
           {services.map((service, index) => (
             <Card
               key={index}
-              className="p-4 cursor-pointer hover:shadow-lg transition-shadow"
+              className="p-4 cursor-pointer hover:shadow-lg transition-shadow bg-card dark:bg-card text-card-foreground dark:text-card-foreground"
               onClick={() => setActiveService(index)}
             >
-              <div className="h-24 w-full bg-gray-300 rounded-t">
+              <div className="h-24 w-full bg-muted dark:bg-muted rounded-t">
                 <img
                   src={service.image}
                   className="h-full w-full object-cover rounded-t"
@@ -198,7 +200,7 @@ const App: React.FC = () => {
               <h3 className="text-center font-semibold mb-1 pt-2">
                 {service.title}
               </h3>
-              <p className="text-xs text-center text-gray-600">
+              <p className="text-xs text-center text-muted-foreground dark:text-muted-foreground">
                 {service.description}
               </p>
             </Card>
@@ -212,7 +214,7 @@ const App: React.FC = () => {
           {achievements.map((achievement, index) => (
             <div
               key={index}
-              className="bg-black text-white rounded-xl p-4 text-center"
+              className="bg-card dark:bg-nav-bg text-card-foreground dark:text-nav-text rounded-xl p-4 text-center"
             >
               <div className="text-2xl md:text-3xl font-bold">{achievement.number}</div>
               <div className="text-sm md:text-base opacity-80">{achievement.label}</div>

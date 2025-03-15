@@ -38,8 +38,8 @@ const BOT_RESPONSES: Record<string, string[]> = {
     "We offer customized pricing based on your specific needs. Please reach out to us for a detailed quotation.",
   ],
   hours: [
-    "We're open Monday to Friday, 9am to 6pm. Weekends are by appointment only.",
-    "Our working hours are 9am to 6pm on weekdays. We can arrange weekend appointments upon request.",
+    "We're open Monday to Friday, 9am to 6pm, Saturday 10am to 4pm. Closed on Sundays.",
+    "Our working hours are 9am to 6pm on weekdays and 10am to 4pm on Saturdays. We're closed on Sundays.",
   ],
   fallback: [
     "I'm not sure I understand. Could you rephrase that?",
@@ -53,8 +53,30 @@ export function Chatbot({ className }: ChatbotProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [isDarkTheme, setIsDarkTheme] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Detect dark mode from localStorage
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+      setIsDarkTheme(true);
+    }
+
+    // Listen for theme changes
+    const observer = new MutationObserver(() => {
+      const isDark = document.documentElement.classList.contains("dark");
+      setIsDarkTheme(isDark);
+    });
+    
+    observer.observe(document.documentElement, { 
+      attributes: true, 
+      attributeFilter: ['class'] 
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   // Initial greeting when the chat is opened
   useEffect(() => {
@@ -99,13 +121,13 @@ export function Chatbot({ className }: ChatbotProps) {
     // Check for keywords in the user's message
     if (normalizedMessage.match(/hi|hello|hey|howdy/i)) {
       return BOT_RESPONSES.greeting[Math.floor(Math.random() * BOT_RESPONSES.greeting.length)];
-    } else if (normalizedMessage.match(/service|offer|provide|do you do/i)) {
+    } else if (normalizedMessage.match(/service|offer|provide|do you do|photograph|videograph|film|editing/i)) {
       return BOT_RESPONSES.services[Math.floor(Math.random() * BOT_RESPONSES.services.length)];
-    } else if (normalizedMessage.match(/contact|reach|email|phone|call/i)) {
+    } else if (normalizedMessage.match(/contact|reach|email|phone|call|address|location|office/i)) {
       return BOT_RESPONSES.contact[Math.floor(Math.random() * BOT_RESPONSES.contact.length)];
-    } else if (normalizedMessage.match(/price|cost|how much|fee|charge/i)) {
+    } else if (normalizedMessage.match(/price|cost|how much|fee|charge|quote|pricing/i)) {
       return BOT_RESPONSES.pricing[Math.floor(Math.random() * BOT_RESPONSES.pricing.length)];
-    } else if (normalizedMessage.match(/hours|time|when|open|schedule/i)) {
+    } else if (normalizedMessage.match(/hours|time|when|open|schedule|weekend|saturday|sunday/i)) {
       return BOT_RESPONSES.hours[Math.floor(Math.random() * BOT_RESPONSES.hours.length)];
     } else {
       return BOT_RESPONSES.fallback[Math.floor(Math.random() * BOT_RESPONSES.fallback.length)];
@@ -150,10 +172,21 @@ export function Chatbot({ className }: ChatbotProps) {
   return (
     <div className={cn("fixed bottom-6 right-6 z-50", className)}>
       {/* Chatbot button */}
-      <button
+      <motion.button
         onClick={toggleChat}
-        className="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full py-3 px-5 shadow-lg transition-all duration-300 font-medium"
+        className={`flex items-center justify-center gap-2 ${
+          isDarkTheme 
+            ? "bg-indigo-600 hover:bg-indigo-700" 
+            : "bg-indigo-600 hover:bg-indigo-700"
+        } text-white rounded-full py-3 px-5 shadow-lg font-medium`}
         aria-label={isOpen ? "Close chat" : "Open chat"}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        transition={{ 
+          type: "spring", 
+          stiffness: 400, 
+          damping: 17 
+        }}
       >
         {isOpen ? (
           <>
@@ -166,7 +199,7 @@ export function Chatbot({ className }: ChatbotProps) {
             <span className="text-sm">Chat</span>
           </>
         )}
-      </button>
+      </motion.button>
 
       {/* Chat window */}
       <AnimatePresence>
@@ -175,12 +208,24 @@ export function Chatbot({ className }: ChatbotProps) {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            className="absolute bottom-16 right-0 w-96 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden flex flex-col"
+            transition={{ 
+              type: "spring", 
+              stiffness: 300, 
+              damping: 25 
+            }}
+            className={`absolute bottom-16 right-0 w-96 max-w-[calc(100vw-2rem)] ${
+              isDarkTheme 
+                ? "bg-gray-800 text-white" 
+                : "bg-white text-gray-900"
+            } rounded-2xl shadow-xl overflow-hidden flex flex-col`}
             style={{ height: "500px" }}
           >
             {/* Chat header */}
-            <div className="flex items-center justify-between px-4 py-4 bg-indigo-600 text-white">
+            <motion.div 
+              className="flex items-center justify-between px-4 py-4 bg-indigo-600 text-white"
+              whileHover={{ backgroundColor: "#4338ca" }}
+              transition={{ duration: 0.2 }}
+            >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center">
                   <FaRegComment size={18} />
@@ -190,32 +235,42 @@ export function Chatbot({ className }: ChatbotProps) {
                   <p className="text-xs opacity-80">Ask me anything about our services</p>
                 </div>
               </div>
-              <button 
+              <motion.button 
                 onClick={toggleChat} 
                 className="p-2 hover:bg-indigo-700 rounded-full transition-colors"
                 aria-label="Close chat"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
               >
                 <FaTimes size={16} />
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
 
             {/* Chat messages */}
-            <div className="flex-1 p-4 overflow-y-auto bg-gray-50 dark:bg-gray-900">
+            <div className={`flex-1 p-4 overflow-y-auto ${
+              isDarkTheme ? "bg-gray-900" : "bg-gray-50"
+            }`}>
               <div className="space-y-4">
                 {messages.map((message) => (
-                  <div
+                  <motion.div
                     key={message.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
                     className={cn(
                       "flex",
                       message.sender === "user" ? "justify-end" : "justify-start"
                     )}
                   >
-                    <div
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
                       className={cn(
                         "max-w-[75%] rounded-2xl px-4 py-3 break-words",
                         message.sender === "user"
                           ? "bg-indigo-600 text-white rounded-tr-none"
-                          : "bg-gray-200 dark:bg-gray-700 dark:text-white rounded-tl-none"
+                          : isDarkTheme 
+                            ? "bg-gray-700 text-white rounded-tl-none" 
+                            : "bg-gray-200 text-gray-800 rounded-tl-none"
                       )}
                     >
                       <div className="text-sm">{message.text}</div>
@@ -224,31 +279,53 @@ export function Chatbot({ className }: ChatbotProps) {
                           "text-xs mt-1",
                           message.sender === "user"
                             ? "text-indigo-200"
-                            : "text-gray-500 dark:text-gray-400"
+                            : isDarkTheme 
+                              ? "text-gray-400" 
+                              : "text-gray-500"
                         )}
                       >
                         {formatTime(message.timestamp)}
                       </div>
-                    </div>
-                  </div>
+                    </motion.div>
+                  </motion.div>
                 ))}
                 {isTyping && (
-                  <div className="flex justify-start">
-                    <div className="bg-gray-200 dark:bg-gray-700 rounded-2xl px-4 py-3 rounded-tl-none">
+                  <motion.div 
+                    className="flex justify-start"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    <div className={`rounded-2xl px-4 py-3 rounded-tl-none ${
+                      isDarkTheme ? "bg-gray-700" : "bg-gray-200"
+                    }`}>
                       <div className="flex space-x-1">
-                        <div className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500 animate-bounce"></div>
-                        <div className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500 animate-bounce" style={{ animationDelay: "0.2s" }}></div>
-                        <div className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500 animate-bounce" style={{ animationDelay: "0.4s" }}></div>
+                        <motion.div 
+                          className={`w-2 h-2 rounded-full ${isDarkTheme ? "bg-gray-500" : "bg-gray-400"}`}
+                          animate={{ y: [0, -5, 0] }}
+                          transition={{ repeat: Infinity, duration: 0.6 }}
+                        ></motion.div>
+                        <motion.div 
+                          className={`w-2 h-2 rounded-full ${isDarkTheme ? "bg-gray-500" : "bg-gray-400"}`}
+                          animate={{ y: [0, -5, 0] }}
+                          transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }}
+                        ></motion.div>
+                        <motion.div 
+                          className={`w-2 h-2 rounded-full ${isDarkTheme ? "bg-gray-500" : "bg-gray-400"}`}
+                          animate={{ y: [0, -5, 0] }}
+                          transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }}
+                        ></motion.div>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 )}
                 <div ref={messagesEndRef} />
               </div>
             </div>
 
             {/* Chat input */}
-            <form onSubmit={handleSendMessage} className="p-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+            <form onSubmit={handleSendMessage} className={`p-3 border-t ${
+              isDarkTheme ? "border-gray-700 bg-gray-800" : "border-gray-200 bg-white"
+            }`}>
               <div className="flex items-center gap-2">
                 <input
                   ref={inputRef}
@@ -256,16 +333,23 @@ export function Chatbot({ className }: ChatbotProps) {
                   placeholder="Type your message..."
                   value={inputValue}
                   onChange={handleInputChange}
-                  className="flex-1 py-2 px-3 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500"
+                  className={`flex-1 py-2 px-3 rounded-full ${
+                    isDarkTheme 
+                      ? "bg-gray-700 text-white placeholder:text-gray-400 focus:ring-indigo-400" 
+                      : "bg-gray-100 text-gray-800 placeholder:text-gray-500 focus:ring-indigo-500"
+                  } outline-none focus:ring-2 transition-all duration-200`}
                 />
-                <button
+                <motion.button
                   type="submit"
                   disabled={!inputValue.trim()}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
                   className="p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   aria-label="Send message"
                 >
                   <IoSend size={18} />
-                </button>
+                </motion.button>
               </div>
             </form>
           </motion.div>
